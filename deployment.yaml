@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniport-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miniport
+  template:
+    metadata:
+      labels:
+        app: miniport
+    spec:
+      containers:
+      - name: miniport-container
+        image: corletey/miniport-website:latest
+        ports:
+        - containerPort: 80
