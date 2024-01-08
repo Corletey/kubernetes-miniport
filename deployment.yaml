@@ -3,10 +3,15 @@ kind: Deployment
 metadata:
   name: miniport-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: miniport
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -17,3 +22,26 @@ spec:
         image: corletey/miniport-website:latest
         ports:
         - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 20
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: miniport-pdb
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: miniport
+
